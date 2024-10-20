@@ -1,6 +1,8 @@
-from g2p import make_g2p
 
-transducer = make_g2p('eng', 'eng-ipa')
+#from g2p import make_g2p
+from phonemizer import phonemize
+
+#transducer = make_g2p('eng', 'eng-ipa')
 
 def rate_apply(batch, rank=None, audio_column_name="audio", text_column_name="text"):
     if isinstance(batch[text_column_name], list):  
@@ -8,14 +10,16 @@ def rate_apply(batch, rank=None, audio_column_name="audio", text_column_name="te
         phonemes_list = []
         if "speech_duration" in batch:
             for text, audio_duration in zip(batch[text_column_name], batch["speech_duration"]):
-                phonemes = transducer(text).output_string
+                #phonemes = transducer(text).output_string
+                phonemes = phonemize(text, language='de', backend='espeak')
                 audio_duration = audio_duration if audio_duration != 0 else 0.01
                 speaking_rate = len(phonemes) / audio_duration
                 speaking_rates.append(speaking_rate)
                 phonemes_list.append(phonemes)
         else:
             for text, audio in zip(batch[text_column_name], batch[audio_column_name]):
-                phonemes = transducer(text).output_string
+                #phonemes = transducer(text).output_string
+                phonemes = phonemize(text, language='de', backend='espeak')
                 
                 sample_rate = audio["sampling_rate"]
                 audio_length = len(audio["array"].squeeze()) / sample_rate
