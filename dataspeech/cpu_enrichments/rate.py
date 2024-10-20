@@ -33,7 +33,8 @@ def rate_apply(batch, rank=None, audio_column_name="audio", text_column_name="te
         batch["speaking_rate"] = speaking_rates
         batch["phonemes"] = phonemes_list
     else:
-        phonemes = transducer(batch[text_column_name]).output_string
+        #phonemes = transducer(batch[text_column_name]).output_string
+        phonemes = phonemize(batch[text_column_name], language='de', backend='espeak')
         if "speech_duration" in batch:
             audio_length = batch["speech_duration"] if batch["speech_duration"] != 0 else 0.01
         else:
